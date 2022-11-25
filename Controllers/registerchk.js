@@ -1,5 +1,7 @@
 const { resetErrorsCount } = require('ajv/dist/compile/errors');
-const { check, validationResult } = require('express-validator');
+const { default: Validator } = require('fastest-validator');
+const validator = require('fastest-validator');
+const validates  = require('../Models/user');
 const userdata = require('../Models/user');
 
 const signupData = (req, res, next) => {
@@ -12,41 +14,69 @@ const signupData = (req, res, next) => {
     var phno = req.body.phno;
     var password = req.body.password;
 
+    var userInput = new userdata({
+        "name": name,
+        "username": username,
+        "email": email,
+        "phno": phno,
+        "password": password
+    });
+
+    const schema = {
+        name:{type:"string",min:3,max:25},
+        username : {type:"string", min : 3, max:25},
+        email : {type: "email"},
+        phno : {type: "number", min:10},
+        password : {type: "string", pattern : "^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})"}
+    };
+
+    const check = new validator();
+    const validation = check.validate(userInput,schema);
+
+    if(validation != true ) {
+        return res.json({
+            message : "Validation Failed",
+            error : validation
+        });
+    }else{
+        userInput.save((error) => {
+            if (error) console.log(error.message);
+            else console.log("Data inserted successfully ...!");
+            // res.json(userInput);
+        });
+    }
+
     // console.log(name);
     // console.log(username);
     // console.log(email);
     // console.log(phno);
     // console.log(password);
 
-    var validate = [
-        check('name')
-            .isLength({ min: 3 }).withMessage("Name contains atleast 3 character"),
-            // .isLength({ max: 25 }).withMessage("Name character less than 25 character"),
-        check('username')
-            // .isLength({ min: 3 }).withMessage("Name contains atleast 3 character")
-            // .isLength({ max: 25 }).withMessage("Name character less than 25 character")
-            .custom(value => {
-                var occur = userdata.findOne({ username: value });
-                if (occur) return "User name alreadt taken...!";
-            }),
-        check('email')
-            // .isLength({ min: 7 }).withMessage("Email contains atleast 7 character")
-            // .isLength({ max: 25 }).withMessage("Email character less than 30 character")
-            .isEmail().withMessage("Invalid email"),
-        check('phno')
-            // .isLength({ min: 10 }).withMessage("Invalid phone number")
-            .isLength({ max: 10 }).withMessage("Invalid phone number"),
-        check('password')
-            .isLength({ min: 7 }).withMessage("Password contains atleast 7 character")
-            // .isLength({ max: 25 }).withMessage("Password character limit exceed,maximum 25 character")
-            // .matches('[0-9]').withMessage('Password Must Contain a Number')
-            // .matches('[A-Z]').withMessage('Password Must Contain a Uppercase Letter')
-            // .matches('[a-z]').withMessage('Password Must Contain a Uppercase Letter')
-    ];
+    // var validate = [
+    //     check('name',"Name should contains +3 character")
+    //         .isLength({ min: 3 })
+    //         .isLength({ max: 25 }),
+    //     check('username',"User name should contain +3 character")
+    //         .isLength({ min: 3 })
+    //         .isLength({ max: 25 })
+    //         .custom(value => {
+    //             var occur = userdata.findOne({ username: value });
+    //             if (occur) return "User name already taken...!";
+    //         }),
+    //     check('email',"Invalid email address")
+    //         .isEmail()
+    //         .normalizeEmail(),
+    //     check('phno',"Invalid phone number")
+    //         .isLength({ min: 10 })
+    //         .isLength({ max: 10 }),
+    //     check('password',"Password should contain 7+ character,it contains one lowercase,uppercase,number and symbol")
+    //         .isLength({ min: 7 })
+    //         .matches("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d@$.!%*#?&]/")
+    // ];
 
     // console.log("Validate: ",validate);
 
-    const errors = validationResult(validate);
+    // const errors = validationResult(req);
     // if (!errors.isEmpty()) {
     //     return res.json({ errors: errors.array() });
     // } else {
@@ -58,14 +88,15 @@ const signupData = (req, res, next) => {
     //         "password": password
     //     });
 
-    //     userInput.save((error) => {
-    //         if (error) console.log(error.message);
-    //         else console.log("Data inserted successfully ...!");
-    //     });
+        // userInput.save((error) => {
+        //     if (error) console.log(error.message);
+        //     else console.log("Data inserted successfully ...!");
+        //     // res.json(userInput);
+        // });
     // }
 
     console.log("Controller inside ...!");
-    return next(errors);
+    return next();
 }
 
 module.exports = {signupData};

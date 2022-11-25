@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const bp = require('body-parser');
 const app = express();
 
-const db = "mongodb://localhost:27017/Registration_Data";
+// const db = "mongodb://localhost:27017/Registration_Data";
+const db = "mongodb://127.0.0.1:27017/Registration_Data";
 
 // API
 const registerData = require('./Routes/register');
