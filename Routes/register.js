@@ -14,8 +14,9 @@ router.get('/register', (req, res,next) => {
 });
 
 // https://localhost:3000/post
-router.post('/post',signupData, (req, res,next) => {
+router.post('/post',signupData, async (req, res,next) => {
     console.log("Came...!");
+    // return await signupData;
 
     // var name = req.body.name;
     // var username = req.body.username;
@@ -37,6 +38,8 @@ router.post('/post',signupData, (req, res,next) => {
     // });
 
     // res.json(userInput);
+    // res.status(200);
+    console.log("Last line of register API");
     next();
 });
 

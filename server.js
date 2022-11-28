@@ -1,21 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bp = require('body-parser');
+// const cors = require('cors');
 const app = express();
 
-// const db = "mongodb://localhost:27017/Registration_Data";
-const db = "mongodb://127.0.0.1:27017/Registration_Data";
+const db = "mongodb://localhost:27017/Registration_Data";
+// const db = "mongodb://127.0.0.1:27017/Registration_Data";
 
 // API
 const registerData = require('./Routes/register');
-const loginData = require('./Routes/login')
+const loginData = require('./Routes/login');
 
 // Body-Parser
+app.use(bp.urlencoded({ extended: false }));
 app.use(bp.json());
+// app.use(cors());
 
 // Middleware 
-app.use('/',registerData);
-app.use('/',loginData);
+app.use('/', registerData);
+app.use('/', loginData);
 
 // Database connection
 mongoose.connect(db, (error, database) => {
