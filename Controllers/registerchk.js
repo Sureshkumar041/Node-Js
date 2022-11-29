@@ -8,6 +8,7 @@ const signupData = async (req, res, next) => {
 
     console.log("Coming data: ", req.body);
 
+
     var name = req.body.name;
     var username = req.body.username;
     var email = req.body.email;
@@ -28,9 +29,9 @@ const signupData = async (req, res, next) => {
         name: { type: "string", min: 3, max: 25 },
         username: { type: "string", min: 3, max: 25 },
         email: { type: "email" },
-        phno: { type: "number", minlenght: 10},
-        password: { type: "string", pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"},
-        confirmPassword: {type: "equal", field: "password"}
+        phno: { type: "number", minlenght: 10 },
+        password: { type: "string", pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})" },
+        confirmPassword: { type: "equal", field: "password" }
     };
 
     const check = new validator();
@@ -40,39 +41,55 @@ const signupData = async (req, res, next) => {
     const userchk = await userdata.findOne({ username: username });
     const emailchk = await userdata.findOne({ email: email });
 
+    // Send response
+    callBack = (sts, msg) => {
+        return res.status(sts).json({
+            "Message": msg
+        });
+    }
+    errorMessage=(validation)=>{
+        return res.status(400).send(validation);
+    }
+
+    // Checking the user data
     if (userchk && emailchk) {
-        res.send("User name already exists \nEmail address already exists");
-    }else if (emailchk) {
-        console.log("Email iruku");
-        res.send("Email address already exists");
-    }else if(userchk){
-        res.send("User name already exists");
+        callBack(400,"User name and Email address already exists");
+        return;
+    } else if (emailchk) {
+        callBack(400,"Email address already exists");
+        return;
+    } else if (userchk) {
+        callBack(400,"User name already exixts");
+        return;
     } else {
         if (validation != true) {
-            // return res.json({
-            //     message: "Validation Failed",
-            //     error: validation
-            // });
-            return res.send(validation);
+            errorMessage(validation);
+            return true;
         } else {
             const salt = await bcrypt.genSalt(1);
             userInput.password = await bcrypt.hash(userInput.password, salt);
             userInput.save((error) => {
-                if (error) console.log(error.message);
-                else{
+                if (error){
+                    console.log(error.message);
+                    return;
+                }
+                else {
                     console.log("Data inserted successfully ...!");
-                    console.log("User input: " ,userInput);
-                } 
-                // res.redirect('/login');
+                    callBack(200,"Registered Successfully...!");
+                    return;
+                }
                 return;
             });
         }
     }
     console.log("Controller inside ...!");
-    return next();
+    next();
 };
 
 module.exports = { signupData };
+
+
+
 
 
 

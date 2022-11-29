@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const userdata = require('../Models/user')
+const loginData = require('../Controllers/loginchk');
+const userdata = require('../Models/user');
 
-router.get('/login',async(req,res)=>{
-    // res.write("Register Data");
-    var dataBase = await userdata.find();
-    res.json(dataBase);
-    // console.log(userdata.find({Name : "Suresh"}));
+
+// https://localhost:3000/login
+router.post('/login',loginData,(req,res,next)=>{
+    console.log("Login here");
+    next();
 });
 
 module.exports = router;

@@ -1,22 +1,46 @@
-const { default: validation } = require('ajv/dist/vocabularies/validation');
 const express = require('express');
-// const { check, validationResult } = require('express-validator');
 const {signupData} = require('../Controllers/registerchk');
 const router = express.Router();
+
 
 // Schema
 const userdata = require('../Models/user');
 
+
 // https://localhost:3000/register
 router.get('/register', (req, res,next) => {
-    res.end("GET Method")
     console.log("Get method");
+    return res.end("GET Method");
 });
+
 
 // https://localhost:3000/post
 router.post('/post',signupData, async (req, res,next) => {
     console.log("Came...!");
-    // return await signupData;
+    next();
+});
+
+module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// return await signupData;
 
     // var name = req.body.name;
     // var username = req.body.username;
@@ -39,8 +63,3 @@ router.post('/post',signupData, async (req, res,next) => {
 
     // res.json(userInput);
     // res.status(200);
-    console.log("Last line of register API");
-    next();
-});
-
-module.exports = router;
