@@ -2,10 +2,8 @@ const express = require('express');
 const {signupData} = require('../Controllers/registerchk');
 const router = express.Router();
 
-
 // Schema
 const userdata = require('../Models/user');
-
 
 // https://localhost:3000/register
 router.get('/register', (req, res,next) => {
@@ -13,10 +11,8 @@ router.get('/register', (req, res,next) => {
     return res.end("GET Method");
 });
 
-
 // https://localhost:3000/post
 router.post('/post',signupData, async (req, res,next) => {
-    console.log("Came...!");
     next();
 });
 

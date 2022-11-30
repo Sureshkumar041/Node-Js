@@ -25,6 +25,10 @@ const userSchema = new Schema({
     },
     confirmPassword: {
         type: String
+    },
+    token:{
+        type: String,
+        required: false
     }
 }, { versionKey: false, timestamps: true });
 

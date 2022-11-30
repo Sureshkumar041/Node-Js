@@ -1,4 +1,3 @@
-
 const validator = require('fastest-validator');
 const bcrypt = require('bcrypt');
 // const validates = require('../Models/user');
@@ -43,24 +42,25 @@ const signupData = async (req, res, next) => {
 
     // Send response
     callBack = (sts, msg) => {
+        console.log("Success");
         return res.status(sts).json({
             "Message": msg
         });
     }
-    errorMessage=(validation)=>{
-        return res.status(400).send(validation);
+    errorMessage = (validation) => {
+        return res.status(400).json(validation);
     }
 
     // Checking the user data
     if (userchk && emailchk) {
-        callBack(400,"User name and Email address already exists");
-        return;
+        callBack(400, "User name and Email address already exists");
+        return true;
     } else if (emailchk) {
-        callBack(400,"Email address already exists");
-        return;
+        callBack(400, "Email address already exists");
+        return true;
     } else if (userchk) {
-        callBack(400,"User name already exixts");
-        return;
+        callBack(400, "User name already exixts");
+        return true;
     } else {
         if (validation != true) {
             errorMessage(validation);
@@ -68,17 +68,19 @@ const signupData = async (req, res, next) => {
         } else {
             const salt = await bcrypt.genSalt(1);
             userInput.password = await bcrypt.hash(userInput.password, salt);
-            userInput.save((error) => {
-                if (error){
-                    console.log(error.message);
-                    return;
+            userInput.save((error, userInput) => {
+                if (error) {
+                    console.log("Unsuccess");
+                    callBack(400, "Register Unsuccess...!");
+                    console.log("Final stage");
+                    return true;
                 }
                 else {
-                    console.log("Data inserted successfully ...!");
-                    callBack(200,"Registered Successfully...!");
-                    return;
+                console.log("Data inserted successfully ...!");
+                callBack(200, "Registered Successfully...!");
+                // return true;
                 }
-                return;
+                // return true;
             });
         }
     }
